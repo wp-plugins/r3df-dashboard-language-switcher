@@ -6,7 +6,7 @@ Plugin URI:		http://r3df.com/
 Version: 		1.0.0
 Text Domain:	r3df-dls
 Domain Path: 	/lang/
-Author:         r3df
+Author:         R3DF
 Author URI:     http://r3df.com
 Author email:   support@r3df.com
 Copyright: 		R-Cubed Design Forge

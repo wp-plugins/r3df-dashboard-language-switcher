@@ -21,10 +21,10 @@ The plugin offers several options for language settings:
 1. user profile setting - user can choose a language in their user profile
 
 Notes:
-* This plugin does NOT add languages to WordPress, you need to add them to use the switcher. (see below)
-* This plugin does NOT translate other plugins or themes, it manages the language setting for the WordPress site. (see below)
-* The admin toolbar switcher takes priority over the other options. If a language selection is made via the toolbar, it changes the user profile setting to the current language selection.
-* If enabled, the login switcher changes the user profile setting to requested language selection at login.
+*   This plugin does NOT add languages to WordPress, you need to add them to use the switcher. (see below)
+*   This plugin does NOT translate other plugins or themes, it manages the language setting for the WordPress site. (see below)
+*   The admin toolbar switcher takes priority over the other options. If a language selection is made via the toolbar, it changes the user profile setting to the current language selection.
+*   If enabled, the login switcher changes the user profile setting to requested language selection at login.
 
 Installing WordPress languages:
 To add languages to WordPress ( since 4.1 ), simply select a new language from the ones available on the "Site Language" setting on the "General Settings" page.
