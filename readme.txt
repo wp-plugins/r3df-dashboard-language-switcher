@@ -14,7 +14,7 @@ Enables individual user selection and setting of dashboard language: at logon, i
 == Description ==
 This plugin allows logged in users to select the language they would like to use when viewing the WordPress dashboard. It works with multisite and single sites.
 
-=The plugin offers several options for language settings:=
+= The plugin offers several options for language settings: =
 1. WordPress admin toolbar switcher - user can easily switch language on admin pages.
 1. logon screen switcher - user can specify his/her preferred language during logon.
 1. user profile setting - user can choose a language in their user profile.
@@ -55,7 +55,7 @@ There is a French translation of this plugin included. It was mostly a test of t
 = I installed the plugin, but my site only has English. =
 You need to install/add languages to your site.  The plugin only changes the locale settings, it does not add languages.
 
-**Installing WordPress languages:**
+** Installing WordPress languages: **
 To add languages to WordPress ( since 4.1 ), simply select a new language from the ones available on the "Site Language" setting on the "General Settings" page.
 When you save your settings, the new language will be added to the site.  (and selected as the current language)
 
