@@ -8,7 +8,7 @@ Text Domain:	r3df-dls
 Domain Path: 	/lang/
 Author:         R3DF
 Author URI:     http://r3df.com
-Author email:   support@r3df.com
+Author email:   plugin-support@r3df.com
 Copyright: 		R-Cubed Design Forge
 */
 
