@@ -2,7 +2,7 @@
 Contributors: r3df
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MX3FLF4YGXRLE
 Tags: dashboard, admin, multi-lingual, multilingual, language, languages, native language, localization, locale, switch, switcher
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 Requires at least: 4.1
 Tested up to: 4.1
 License: GPLv2 or later
@@ -68,6 +68,9 @@ you need to contact the authors of those works to get the needed translation fil
 1. The admin toolbar language selector.
 
 == Changelog ==
+= Version 1.0.2 =
+* Bug fix for empty array when saving options with no locales hidden
+
 = Version 1.0.1 =
 * Minor bug fixes
 * Some more refactoring
@@ -78,6 +81,9 @@ you need to contact the authors of those works to get the needed translation fil
 
 
 == Upgrade Notice ==
+= 1.0.2 =
+* Bug fix
+
 = 1.0.1 =
 * Minor bug fixes
 * DB change will cause settings to be reset

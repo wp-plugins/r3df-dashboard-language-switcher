@@ -3,7 +3,7 @@
 Plugin Name: 	R3DF - Dashboard Language Switcher
 Description:    Set the admin language based on user choice
 Plugin URI:		http://r3df.com/
-Version: 		1.0.1
+Version: 		1.0.2
 Text Domain:	r3df-dls
 Domain Path: 	/lang/
 Author:         R3DF
@@ -671,7 +671,7 @@ class R3DF_Dashboard_Language_Switcher {
 		add_settings_section( 'r3df_dls_options', __( 'General options:', 'r3df-dls' ), null, 'r3df_dls' );
 		add_settings_field( 'translate_site_toobar', __( 'Translate frontend toolbar using selected backend language', 'r3df-dls' ), array( $this, 'translate_site_toobar_form_item' ), 'r3df_dls', 'r3df_dls_options', array( 'label_for' => 'translate_site_toobar' ) );
 		add_settings_field( 'enable_locale_abbreviations', __( 'Add locale abbreviations after the language name', 'r3df-dls' ), array( $this, 'enable_locale_abbreviations_form_item' ), 'r3df_dls', 'r3df_dls_options', array( 'label_for' => 'enable_locale_abbreviations' ) );
-		add_settings_field( 'cleanup_on_uninstall', __( 'Cleanup all settings at plugin deactivation', 'r3df-dls' ), array( $this, 'cleanup_on_uninstall_form_item' ), 'r3df_dls', 'r3df_dls_options', array( 'label_for' => 'cleanup_on_uninstall' ) );
+		add_settings_field( 'cleanup_on_uninstall', __( 'Cleanup all settings at plugin uninstall', 'r3df-dls' ), array( $this, 'cleanup_on_uninstall_form_item' ), 'r3df_dls', 'r3df_dls_options', array( 'label_for' => 'cleanup_on_uninstall' ) );
 
 		add_settings_section( 'r3df_dls_languages', __( 'Installed languages:', 'r3df-dls' ), null, 'r3df_dls' );
 		$installed = $this->get_installed_languages();
@@ -700,8 +700,10 @@ class R3DF_Dashboard_Language_Switcher {
 		$newinput['cleanup_on_uninstall'] = ( $input['cleanup_on_uninstall'] == 'true' ) ? true : false;
 
 		$newinput['hide_language'] = array();
-		foreach ( $input['hide_language'] as $language => $hide ) {
-			$newinput['hide_language'][ $language ] = ( 'true' == $hide ) ? true : false;
+		if ( ! empty( $input['hide_language'] ) ) {
+			foreach ( $input['hide_language'] as $language => $hide ) {
+				$newinput['hide_language'][ $language ] = ( 'true' == $hide ) ? true : false;
+			}
 		}
 		return $newinput;
 	}
