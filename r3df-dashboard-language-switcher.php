@@ -3,7 +3,7 @@
 Plugin Name: 	R3DF - Dashboard Language Switcher
 Description:    Set the admin language based on user choice
 Plugin URI:		http://r3df.com/
-Version: 		1.0.0
+Version: 		1.0.1
 Text Domain:	r3df-dls
 Domain Path: 	/lang/
 Author:         R3DF
@@ -63,7 +63,7 @@ class R3DF_Dashboard_Language_Switcher {
 		'user_profile_language_switcher' => true,
 		'translate_site_toobar' => true,
 		'enable_locale_abbreviations' => false,
-		'cleanup_on_deactivate' => true,
+		'cleanup_on_uninstall' => true,
 		'hide_language' => array(),
 	);
 	private $_options = array();
@@ -75,17 +75,13 @@ class R3DF_Dashboard_Language_Switcher {
 	function __construct() {
 
 		// get plugin options
-		$this->_options = get_option( 'r3df_dashboard_language_settings', $this->_defaults );
-
-		// Add plugin text domain hook
-		add_action( 'plugins_loaded', array( &$this, '_text_domain' ) );
+		$this->_options = get_option( 'r3df_dashboard_language_switcher', $this->_defaults );
 
 		// register plugin activation/deactivation hooks
 		register_activation_hook( plugin_basename( __FILE__ ), array( &$this, 'activate_plugin' ) );
-		register_deactivation_hook( plugin_basename( __FILE__ ), array( &$this, 'deactivate_plugin' ) );
 
-		// if activation fails, show it
-		$this->_display_version_errors();
+		// Add plugin text domain hook
+		add_action( 'plugins_loaded', array( &$this, '_text_domain' ) );
 
 		// remove admin locale for msls
 		// **************************************************
@@ -97,7 +93,7 @@ class R3DF_Dashboard_Language_Switcher {
 		// locale fix, saves it in filter_locale (the global $locale) and restores after it is overwritten in wp-settings.php line 308
 		add_action( 'after_setup_theme', array( &$this, 'restore_locale' ) );
 
-		// Add settings page
+		// Add plugins settings page
 		add_action( 'admin_menu', array( $this, 'register_r3df_dls_settings_page' ) );
 		add_action( 'admin_init', array( $this, 'r3df_dls_settings' ) );
 
@@ -119,6 +115,7 @@ class R3DF_Dashboard_Language_Switcher {
 		// Save locale submitted in language switcher
 		add_action( 'wp_loaded', array( &$this, 'save_switcher_locale' ) );
 
+		// load admin css and javascript
 		add_action( 'admin_enqueue_scripts', array( $this, '_load_admin_scripts_and_styles' ) );
 
 		// Toolbar selector setup
@@ -178,7 +175,7 @@ class R3DF_Dashboard_Language_Switcher {
 	 * Adds admin note to msls options about admin language
 	 *
 	 */
-	function add_msls_note() { echo '<p class="r3df-dls-alert">'.__( 'Admin language setting is being overridden by the plugin: ', 'r3df-dls' ) .'R3DF - Dashboard Language Switcher' . '</p>'; }
+	function add_msls_note() { echo '<p class="r3df-alert">'.__( 'Admin language setting is being overridden by the plugin: ', 'r3df-dls' ) .'R3DF - Dashboard Language Switcher' . '</p>'; }
 
 
 	/**
@@ -632,7 +629,7 @@ class R3DF_Dashboard_Language_Switcher {
 	 *
 	 */
 	function register_r3df_dls_settings_page() {
-		$my_admin_page = add_submenu_page( 'options-general.php', 'R3DF - Dashboard Language Switcher', 'Dashboard Language', 'manage_options', 'r3df-dashboard-language', array(
+		$my_admin_page = add_submenu_page( 'options-general.php', 'R3DF - Dashboard Language Switcher', 'Dashboard Language', 'manage_options', 'r3df-dashboard-language-switcher', array(
 			$this,
 			'r3df_dls_settings_page',
 		) );
@@ -649,7 +646,7 @@ class R3DF_Dashboard_Language_Switcher {
 			<h2><?php echo 'R3DF - Dashboard Language Switcher'; ?></h2>
 
 			<form action="options.php" method="post">
-				<?php settings_fields( 'r3df_dashboard_language_settings' ); ?>
+				<?php settings_fields( 'r3df_dashboard_language_switcher' ); ?>
 				<?php do_settings_sections( 'r3df_dls' ); ?>
 				<input class="button button-primary" name="Submit" type="submit"
 				       value="<?php esc_attr_e( 'Save Changes', 'r3df-dls' ); ?>"/>
@@ -663,7 +660,7 @@ class R3DF_Dashboard_Language_Switcher {
 	 */
 	function r3df_dls_settings() {
 		// Option name in db
-		register_setting( 'r3df_dashboard_language_settings', 'r3df_dashboard_language_settings', array( $this, 'r3df_dls_options_validate' ) );
+		register_setting( 'r3df_dashboard_language_switcher', 'r3df_dashboard_language_switcher', array( $this, 'r3df_dls_options_validate' ) );
 
 		// Language selector settings
 		add_settings_section( 'r3df_dls_selectors', __( 'Enable language selectors:', 'r3df-dls' ), array( $this, 'r3df_dls_selectors_form_section' ), 'r3df_dls' );
@@ -674,7 +671,7 @@ class R3DF_Dashboard_Language_Switcher {
 		add_settings_section( 'r3df_dls_options', __( 'General options:', 'r3df-dls' ), null, 'r3df_dls' );
 		add_settings_field( 'translate_site_toobar', __( 'Translate frontend toolbar using selected backend language', 'r3df-dls' ), array( $this, 'translate_site_toobar_form_item' ), 'r3df_dls', 'r3df_dls_options', array( 'label_for' => 'translate_site_toobar' ) );
 		add_settings_field( 'enable_locale_abbreviations', __( 'Add locale abbreviations after the language name', 'r3df-dls' ), array( $this, 'enable_locale_abbreviations_form_item' ), 'r3df_dls', 'r3df_dls_options', array( 'label_for' => 'enable_locale_abbreviations' ) );
-		add_settings_field( 'cleanup_on_deactivate', __( 'Cleanup all settings at plugin deactivation', 'r3df-dls' ), array( $this, 'cleanup_on_deactivate_form_item' ), 'r3df_dls', 'r3df_dls_options', array( 'label_for' => 'cleanup_on_deactivate' ) );
+		add_settings_field( 'cleanup_on_uninstall', __( 'Cleanup all settings at plugin deactivation', 'r3df-dls' ), array( $this, 'cleanup_on_uninstall_form_item' ), 'r3df_dls', 'r3df_dls_options', array( 'label_for' => 'cleanup_on_uninstall' ) );
 
 		add_settings_section( 'r3df_dls_languages', __( 'Installed languages:', 'r3df-dls' ), null, 'r3df_dls' );
 		$installed = $this->get_installed_languages();
@@ -700,7 +697,7 @@ class R3DF_Dashboard_Language_Switcher {
 
 		$newinput['translate_site_toobar'] = ( $input['translate_site_toobar'] == 'true' ) ? true : false;
 		$newinput['enable_locale_abbreviations'] = ( $input['enable_locale_abbreviations'] == 'true' ) ? true : false;
-		$newinput['cleanup_on_deactivate'] = ( $input['cleanup_on_deactivate'] == 'true' ) ? true : false;
+		$newinput['cleanup_on_uninstall'] = ( $input['cleanup_on_uninstall'] == 'true' ) ? true : false;
 
 		$newinput['hide_language'] = array();
 		foreach ( $input['hide_language'] as $language => $hide ) {
@@ -727,7 +724,7 @@ class R3DF_Dashboard_Language_Switcher {
 	 *
 	 */
 	function login_language_switcher_form_item( $args ) {
-		echo '<input type="checkbox" id="login_language_switcher" name="r3df_dashboard_language_settings[login_language_switcher]"'. checked( $this->_options['login_language_switcher'], true, false ) . 'value="true" >' . __( 'Yes', 'r3df-dls' );
+		echo '<input type="checkbox" id="login_language_switcher" name="r3df_dashboard_language_switcher[login_language_switcher]"'. checked( $this->_options['login_language_switcher'], true, false ) . 'value="true" >' . __( 'Yes', 'r3df-dls' );
 	}
 
 	/**
@@ -737,7 +734,7 @@ class R3DF_Dashboard_Language_Switcher {
 	 *
 	 */
 	function admin_toolbar_language_switcher_form_item( $args ) {
-		echo '<input type="checkbox" id="admin_toolbar_language_switcher" name="r3df_dashboard_language_settings[admin_toolbar_language_switcher]"'. checked( $this->_options['admin_toolbar_language_switcher'], true, false ) . 'value="true" >' . __( 'Yes', 'r3df-dls' );
+		echo '<input type="checkbox" id="admin_toolbar_language_switcher" name="r3df_dashboard_language_switcher[admin_toolbar_language_switcher]"'. checked( $this->_options['admin_toolbar_language_switcher'], true, false ) . 'value="true" >' . __( 'Yes', 'r3df-dls' );
 	}
 
 	/**
@@ -747,7 +744,7 @@ class R3DF_Dashboard_Language_Switcher {
 	 *
 	 */
 	function user_profile_language_switcher_form_item( $args ) {
-		echo '<input type="checkbox" id="user_profile_language_switcher" name="r3df_dashboard_language_settings[user_profile_language_switcher]"'. checked( $this->_options['user_profile_language_switcher'], true, false ) . 'value="true" >' . __( 'Yes', 'r3df-dls' );
+		echo '<input type="checkbox" id="user_profile_language_switcher" name="r3df_dashboard_language_switcher[user_profile_language_switcher]"'. checked( $this->_options['user_profile_language_switcher'], true, false ) . 'value="true" >' . __( 'Yes', 'r3df-dls' );
 	}
 
 
@@ -758,7 +755,7 @@ class R3DF_Dashboard_Language_Switcher {
 	 *
 	 */
 	function translate_site_toobar_form_item( $args ) {
-		echo '<input type="checkbox" id="translate_site_toobar" name="r3df_dashboard_language_settings[translate_site_toobar]"'. checked( $this->_options['translate_site_toobar'], true, false ) . 'value="true" >' . __( 'Yes', 'r3df-dls' );
+		echo '<input type="checkbox" id="translate_site_toobar" name="r3df_dashboard_language_switcher[translate_site_toobar]"'. checked( $this->_options['translate_site_toobar'], true, false ) . 'value="true" >' . __( 'Yes', 'r3df-dls' );
 	}
 
 	/**
@@ -768,17 +765,17 @@ class R3DF_Dashboard_Language_Switcher {
 	 *
 	 */
 	function enable_locale_abbreviations_form_item( $args ) {
-		echo '<input type="checkbox" id="enable_locale_abbreviations" name="r3df_dashboard_language_settings[enable_locale_abbreviations]"'. checked( $this->_options['enable_locale_abbreviations'], true, false ) . 'value="true" >' . __( 'Yes', 'r3df-dls' );
+		echo '<input type="checkbox" id="enable_locale_abbreviations" name="r3df_dashboard_language_switcher[enable_locale_abbreviations]"'. checked( $this->_options['enable_locale_abbreviations'], true, false ) . 'value="true" >' . __( 'Yes', 'r3df-dls' );
 	}
 
 	/**
-	 * Settings page html content - cleanup_on_deactivate
+	 * Settings page html content - cleanup_on_uninstall
 	 *
 	 * @param $args
 	 *
 	 */
-	function cleanup_on_deactivate_form_item( $args ) {
-		echo '<input type="checkbox" id="cleanup_on_deactivate" name="r3df_dashboard_language_settings[cleanup_on_deactivate]"'. checked( $this->_options['cleanup_on_deactivate'], true, false ) . 'value="true" >' . __( 'Yes', 'r3df-dls' );
+	function cleanup_on_uninstall_form_item( $args ) {
+		echo '<input type="checkbox" id="cleanup_on_uninstall" name="r3df_dashboard_language_switcher[cleanup_on_uninstall]"'. checked( $this->_options['cleanup_on_uninstall'], true, false ) . 'value="true" >' . __( 'Yes', 'r3df-dls' );
 	}
 
 
@@ -789,8 +786,8 @@ class R3DF_Dashboard_Language_Switcher {
 	 *
 	 */
 	function languages_form_item( $args ) {
-		echo '<input type="checkbox" id="r3df_dashboard_language_settings[hide_language][' . $args['lang'] . ']"
-				name="r3df_dashboard_language_settings[hide_language][' . $args['lang'] . ']"' . checked( $this->_options['hide_language'][ $args['lang'] ], true, false ) . 'value="true" >' . __( 'Hide on selectors', 'r3df-dls' );
+		echo '<input type="checkbox" id="r3df_dashboard_language_switcher[hide_language][' . $args['lang'] . ']"
+				name="r3df_dashboard_language_switcher[hide_language][' . $args['lang'] . ']"' . checked( $this->_options['hide_language'][ $args['lang'] ], true, false ) . 'value="true" >' . __( 'Hide on selectors', 'r3df-dls' );
 		echo $this->is_rtl_language( $args['lang'] ) ? '<br>' . __( 'RTL language', 'r3df-dls' ) : '';
 	}
 
@@ -828,8 +825,8 @@ class R3DF_Dashboard_Language_Switcher {
 		<h3><?php echo __( 'Options', 'r3df-dls' ); ?></h3>
 		<p><?php echo __( 'TBD', 'r3df-dls' ); ?></p>
 		<p style="margin-top: 50px;padding-top:10px; border-top: solid 1px #ccc;">
-			<a href="http://wordpress.org/extend/plugins/r3df-dashboard-language/" target="_blank"><?php echo __( 'Plugin Directory', 'r3df-dls' ) ?></a> |
-			<a href="http://wordpress.org/extend/plugins/r3df-dashboard-language/changelog/" target="_blank"><?php echo __( 'Change Logs', 'r3df-dls' ) ?></a>
+			<a href="http://wordpress.org/extend/plugins/r3df-dashboard-language-switcher/" target="_blank"><?php echo __( 'Plugin Directory', 'r3df-dls' ) ?></a> |
+			<a href="http://wordpress.org/extend/plugins/r3df-dashboard-language-switcher/changelog/" target="_blank"><?php echo __( 'Change Logs', 'r3df-dls' ) ?></a>
 			<span class="alignright">&copy; 2015 <?php echo __( 'by', 'r3df-dls' ) ?> <a href="http://r3df.com/" target="_blank">R3DF</a></span>
 		</p>
 		<?php
@@ -949,7 +946,7 @@ class R3DF_Dashboard_Language_Switcher {
 	}
 
 	/**
-	 * Plugin language file loader
+	 * Admin scripts and styles loader
 	 *
 	 * @param $hook
 	 *
@@ -965,11 +962,11 @@ class R3DF_Dashboard_Language_Switcher {
 
 		// Register and enqueue the css files
 		if ( 'rtl' == $text_direction ) {
-			wp_register_style( 'r3df_dls_style_rtl', plugins_url( '/css/style-rtl.css', __FILE__ ), false, $plugin['Version'] );
-			wp_enqueue_style( 'r3df_dls_style_rtl' );
+			wp_register_style( 'r3df_dls_admin_style_rtl', plugins_url( '/css/admin_style-rtl.css', __FILE__ ), false, $plugin['Version'] );
+			wp_enqueue_style( 'r3df_dls_admin_style_rtl' );
 		} else {
-			wp_register_style( 'r3df_dls_style', plugins_url( '/css/style.css', __FILE__ ), false, $plugin['Version'] );
-			wp_enqueue_style( 'r3df_dls_style' );
+			wp_register_style( 'r3df_dls_admin_style', plugins_url( '/css/admin_style.css', __FILE__ ), false, $plugin['Version'] );
+			wp_enqueue_style( 'r3df_dls_admin_style' );
 		}
 	}
 
@@ -983,61 +980,27 @@ class R3DF_Dashboard_Language_Switcher {
 	 *
 	 */
 	function activate_plugin() {
-		$version_error = $this->_get_version_errors();
-		if ( 0 != count( $version_error ) ) {
-			$current = get_option( 'active_plugins' );
-			array_splice( $current, array_search( plugin_basename( __FILE__ ), $current ), 1 );
-			update_option( 'active_plugins', $current );
-			exit();
-		}
-	}
-
-	/**
-	 * Clean up on plugin deactivation
-	 *
-	 */
-	function deactivate_plugin() {
-		if ( $this->_options['cleanup_on_deactivate'] ) {
-			delete_option( 'r3df-dashboard-language' );
-			//cleanup the user settings
-			global $wpdb;
-			$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->usermeta WHERE meta_key = %s", 'r3df-dashboard-language' ) );
-		}
-	}
-
-	/**
-	 * Check required versions
-	 *
-	 * @return array
-	 *
-	 */
-	function _get_version_errors() {
-		$error = array();
 		global $wp_version;
+		$version_error = array();
 		if ( ! version_compare( $wp_version, '4.1', '>=' ) ) {
-			$error['WordPress Version'] = array( 'required' => '4.1', 'found' => $wp_version );
+			$version_error['WordPress Version'] = array( 'required' => '4.1', 'found' => $wp_version );
 		}
 		//if ( ! version_compare( phpversion(), '4.4.3', '>=' ) ) {
 		//	$error['PHP Version'] = array( 'required' => '4.4.3', 'found' => phpversion() );
 		//}
-		return $error;
-	}
-
-	/**
-	 * Display potential install errors
-	 *
-	 */
-	function _display_version_errors() {
-		if ( isset( $_GET['action'] ) && isset( $_GET['plugin'] ) && ( 'error_scrape' == $_GET['action'] ) && ( $_GET['plugin'] == plugin_basename( __FILE__ ) ) ) {
-			$version_error = $this->_get_version_errors();
+		if ( 0 != count( $version_error ) ) {
+			$current = get_option( 'active_plugins' );
+			array_splice( $current, array_search( plugin_basename( __FILE__ ), $current ), 1 );
+			update_option( 'active_plugins', $current );
 			if ( 0 != count( $version_error ) ) {
 				echo '<table>';
-				echo '<tr style="font-size: 12px;"><td><strong style="border-bottom: 1px solid #000;">'.__( 'Plugin can not be activated.', 'r3df-dls' ) . '</strong></td><td> | '.__( 'required', 'r3df-dls' ) . '</td><td> | '.__( 'actual', 'r3df-dls' ) . '</td></tr>';
+				echo '<tr class="r3df-header"><td><strong>'.__( 'Plugin can not be activated.', 'r3df-mli' ) . '</strong></td><td> | '.__( 'required', 'r3df-mli' ) . '</td><td> | '.__( 'actual', 'r3df-mli' ) . '</td></tr>';
 				foreach ( $version_error as $key => $value ) {
-					echo '<tr style="font-size: 12px;"><td>$key</td><td align=\"center\"> &gt;= <strong>' . $value['required'] . '</strong></td><td align="center"><span style="color:#f00;">' . $value['found'] . '</span></td></tr>';
+					echo '<tr><td>'.$key.'</td><td align=\"center\"> &gt;= <strong>' . $value['required'] . '</strong></td><td align="center"><span class="r3df-alert">' . $value['found'] . '</span></td></tr>';
 				}
 				echo '</table>';
 			}
+			exit();
 		}
 	}
 }

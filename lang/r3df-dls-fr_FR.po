@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: R3DF - Dashboard Language Switcher\n"
 "POT-Creation-Date: 2015-04-09 19:45-0500\n"
-"PO-Revision-Date: 2015-04-09 19:46-0500\n"
+"PO-Revision-Date: 2015-04-11 21:18-0500\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -125,7 +125,7 @@ msgstr "Répertoire des extensions"
 
 #: r3df-dashboard-language-switcher.php:832
 msgid "Change Logs"
-msgstr "Changer le journal"
+msgstr "Journaux des modifications"
 
 #: r3df-dashboard-language-switcher.php:833
 msgid "by"

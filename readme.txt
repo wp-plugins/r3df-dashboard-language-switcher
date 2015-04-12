@@ -1,8 +1,8 @@
 === R3DF Dashboard Language Switcher ===
 Contributors: r3df
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=MX3FLF4YGXRLE
-Tags: dashboard, admin, multi-lingual, multilingual, wpml, language, languages, native language, localization, locale, switch, switcher
-Stable tag: 1.0.0
+Tags: dashboard, admin, multi-lingual, multilingual, language, languages, native language, localization, locale, switch, switcher
+Stable tag: 1.0.1
 Requires at least: 4.1
 Tested up to: 4.1
 License: GPLv2 or later
@@ -12,7 +12,7 @@ Enables individual user selection and setting of dashboard language: at logon, i
 
 
 == Description ==
-This plugin allows logged in users to select the language they would like to use when viewing the WordPress dashboard. It works with multisite and single sites.
+This plugin allows logged in users to select the language they would like to use when viewing the WordPress dashboard. It works with multisite and single site installs of WordPress.
 
 = The plugin offers several options for language settings: =
 1. WordPress admin toolbar switcher - user can easily switch language on admin pages.
@@ -68,10 +68,19 @@ you need to contact the authors of those works to get the needed translation fil
 1. The admin toolbar language selector.
 
 == Changelog ==
+= Version 1.0.1 =
+* Minor bug fixes
+* Some more refactoring
+   * Moved deactivate cleanup to uninstall
+
 = Version 1.0.0 =
 * Initial release
 
 
 == Upgrade Notice ==
+= 1.0.1 =
+* Minor bug fixes
+* DB change will cause settings to be reset
+
 = 1.0.0 =
 * Initial release
